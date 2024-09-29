@@ -1,7 +1,5 @@
 from typing import Any, Awaitable, Callable
 
-import uvicorn
-
 from lecture_1.hw.handler.Factorial import Factorial
 from lecture_1.hw.handler.Fibonacci import Fibonacci
 from lecture_1.hw.handler.Mean import Mean
@@ -35,7 +33,3 @@ async def app(
             return await Mean(scope, receive, send).handle()
         case _:
             return await Errors.send_404(send)
-
-
-if __name__ == "__main__":
-    uvicorn.run("lecture_1.hw.math_plain_asgi:app", port=5000, log_level="info")
