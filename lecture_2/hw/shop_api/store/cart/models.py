@@ -1,14 +1,19 @@
 from dataclasses import dataclass
 from decimal import Decimal
 
-from lecture_2.hw.shop_api.store.item.models import ItemEntity
+
+@dataclass(slots=True)
+class CartItem:
+    id: int
+    name: str
+    quantity: int
+    available: bool
 
 
 @dataclass(slots=True)
 class CartInfo:
-    items: list[ItemEntity]
+    items: list[CartItem]
     price: Decimal
-    deleted: bool
 
 
 @dataclass(slots=True)

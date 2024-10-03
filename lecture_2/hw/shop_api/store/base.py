@@ -14,7 +14,7 @@ Entity = TypeVar('Entity')
 Info = TypeVar('Info')
 
 
-class Repository(Generic[Entity, Info], ABC):
+class Dao(Generic[Entity, Info], ABC):
 
     def __init__(self):
         self._id_generator = int_id_generator()
@@ -22,11 +22,9 @@ class Repository(Generic[Entity, Info], ABC):
 
     def add(self, info: Info) -> Entity:
         _id = next(self._id_generator)
-        self._data[_id] = info
+        self._data[_id] = Entity(_id, info)
 
         return Entity(_id, info)
 
-    def delete(self, id: int) -> None:
-        if id in self._data:
-            del self._data[id]
-
+    def get(self, id: int) -> Entity:
+        return self._data.get(id, None)
