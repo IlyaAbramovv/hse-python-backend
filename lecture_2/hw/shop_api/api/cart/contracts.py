@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import decimal
-
 from pydantic import BaseModel
 
 from lecture_2.hw.shop_api.store.cart.models import CartEntity, CartItem
@@ -26,8 +24,7 @@ class CartItemResponse(BaseModel):
 class CartResponse(BaseModel):
     id: int
     items: list[CartItemResponse]
-    price: decimal
-    quantity: int
+    price: float
 
     @staticmethod
     def from_entity(entity: CartEntity) -> CartResponse:

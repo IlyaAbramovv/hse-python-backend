@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-import decimal
-
 from pydantic import BaseModel
+
 from lecture_2.hw.shop_api.store.item.models import ItemEntity, ItemInfo
 
 
 class ItemResponse(BaseModel):
     id: int
     name: str
-    price: decimal
+    price: float
     deleted: bool
 
     @staticmethod
@@ -24,8 +23,8 @@ class ItemResponse(BaseModel):
 
 class ItemRequest(BaseModel):
     name: str | None
-    price: decimal
-    deleted: bool
+    deleted: bool = False
+    price: float
 
     def as_item_info(self) -> ItemInfo:
         return ItemInfo(name=self.name, price=self.price, deleted=self.deleted)

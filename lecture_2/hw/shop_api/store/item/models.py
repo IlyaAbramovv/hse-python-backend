@@ -1,11 +1,10 @@
 from dataclasses import dataclass
-from decimal import Decimal
 
 
 @dataclass(slots=True)
 class ItemInfo:
     name: str
-    price: Decimal
+    price: float
     deleted: bool
 
 

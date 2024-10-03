@@ -3,16 +3,11 @@ from lecture_2.hw.shop_api.store.item.models import ItemEntity, ItemInfo
 
 
 class ItemDao(Dao[ItemEntity, ItemInfo]):
-    def __init__(self):
-        super().__init__()
-
     def get_batch(self, limit: int,
                   offset: int,
                   min_price: float | None = None,
                   max_price: float | None = None,
-                  show_deleted: bool = False) -> list[ItemEntity] | None:
-        if offset > len(self._data):
-            return None
+                  show_deleted: bool = False) -> list[ItemEntity]:
         filtered = list(filter(lambda x: self.filter_item(x, min_price, max_price, show_deleted), self._data.values()))
         return filtered[offset:offset + limit]
 
@@ -37,10 +32,10 @@ class ItemDao(Dao[ItemEntity, ItemInfo]):
         return self._data[id]
 
     @staticmethod
-    def filter_item(item: ItemEntity, min_price: float | None = None, max_price: float | None = None, show_deleted: bool = False):
+    def filter_item(item: ItemEntity, min_price: float | None, max_price: float | None, show_deleted: bool) -> bool:
         return (min_price is None or item.info.price >= min_price) \
             and (max_price is None or item.info.price <= max_price) \
             and (show_deleted or not item.info.deleted)
 
 
-item_dao = ItemDao()
+item_dao = ItemDao(ItemEntity)
