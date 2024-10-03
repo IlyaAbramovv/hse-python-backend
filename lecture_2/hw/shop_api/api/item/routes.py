@@ -37,7 +37,7 @@ async def get_item(id: int) -> ItemResponse:
     "/",
     status_code=HTTPStatus.OK,
 )
-async def get(
+async def get_batch(
         limit: Annotated[PositiveInt, Query()],
         offset: Annotated[NonNegativeInt, Query()],
         min_price: Annotated[float, Query()] = None,

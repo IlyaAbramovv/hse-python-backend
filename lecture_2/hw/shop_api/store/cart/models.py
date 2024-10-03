@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from decimal import Decimal
 
 
 @dataclass(slots=True)
@@ -13,7 +12,7 @@ class CartItem:
 @dataclass(slots=True)
 class CartInfo:
     items: list[CartItem]
-    price: Decimal
+    price: float
 
 
 @dataclass(slots=True)
