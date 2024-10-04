@@ -2,7 +2,7 @@ from http import HTTPStatus
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query
-from pydantic import NonNegativeInt, PositiveInt
+from pydantic import NonNegativeInt, PositiveInt, NonNegativeFloat
 
 from lecture_2.hw.shop_api.api.item.contracts import ItemRequest, ItemResponse
 from lecture_2.hw.shop_api.store.item.dao import item_dao
@@ -38,10 +38,10 @@ async def get_item(id: int) -> ItemResponse:
     status_code=HTTPStatus.OK,
 )
 async def get_batch(
-        limit: Annotated[PositiveInt, Query()],
-        offset: Annotated[NonNegativeInt, Query()],
-        min_price: Annotated[float, Query()] = None,
-        max_price: Annotated[float, Query()] = None,
+        limit: Annotated[PositiveInt, Query()] = 10,
+        offset: Annotated[NonNegativeInt, Query()] = 0,
+        min_price: Annotated[NonNegativeFloat, Query()] = None,
+        max_price: Annotated[NonNegativeFloat, Query()] = None,
         show_deleted: Annotated[bool, Query()] = False,
 ) -> list[ItemResponse]:
     entities = item_dao.get_batch(limit, offset, min_price, max_price, show_deleted)
@@ -66,22 +66,30 @@ async def put_item(id: int, info: ItemRequest) -> ItemResponse:
     "/{id}",
     responses={HTTPStatus.OK: {}, HTTPStatus.NOT_FOUND: {}},
 )
-async def patch_item(id: int, info: ItemRequest) -> ItemResponse:
-    entity = item_dao.patch(id, info.as_dict())
+async def patch_item(id: int, info: dict) -> ItemResponse:
+    # item = item_dao.get(id)
+    # if ('name' not in info or item.info.name == info['name']) and ('price' not in info or item.info.price == info['price']):
+    #     raise HTTPException(HTTPStatus.NOT_MODIFIED)
+    if info.keys() > {'name', 'price'}:
+        raise HTTPException(
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+            f"Request resource /item/{id} was not found",
+        )
+    entity = item_dao.patch(id, info)
     if not entity:
         raise HTTPException(
-            HTTPStatus.NOT_FOUND,
+            HTTPStatus.NOT_MODIFIED,
             f"Request resource /item/{id} was not found",
         )
     return ItemResponse.from_entity(entity)
 
 
-@router.patch(
+@router.delete(
     "/{id}",
     responses={HTTPStatus.OK: {}, HTTPStatus.NOT_FOUND: {}},
 )
-async def patch_item(id: int, info: ItemRequest) -> ItemResponse:
-    entity = item_dao.delete(id, info.as_dict())
+async def delete_item(id: int) -> ItemResponse:
+    entity = item_dao.delete(id)
     if not entity:
         raise HTTPException(
             HTTPStatus.NOT_FOUND,

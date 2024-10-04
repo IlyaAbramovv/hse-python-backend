@@ -18,17 +18,23 @@ class ItemDao(Dao[ItemEntity, ItemInfo]):
         return self._data[id]
 
     def patch(self, id, patch: dict) -> ItemEntity | None:
-        if id not in self._data:
+        if id not in self._data or self._data[id].info.deleted:
             return None
         if 'name' in patch:
-            self._data[id].name = patch['name']
+            self._data[id].info.name = patch['name']
         if 'price' in patch:
-            self._data[id].price = patch['price']
+            self._data[id].info.price = patch['price']
+        return self._data[id]
 
     def delete(self, id) -> ItemEntity | None:
         if id not in self._data:
             return None
-        self._data[id].deleted = True
+        self._data[id].info.deleted = True
+        return self._data[id]
+
+    def get(self, id: int) -> ItemEntity | None:
+        if id not in self._data or self._data[id].info.deleted:
+            return None
         return self._data[id]
 
     @staticmethod
