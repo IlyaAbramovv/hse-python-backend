@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
-from lecture_2.hw.shop_api.store.item.models import ItemEntity, ItemInfo
+from ...store.item.models import ItemEntity, ItemInfo
 
 
 class ItemResponse(BaseModel):

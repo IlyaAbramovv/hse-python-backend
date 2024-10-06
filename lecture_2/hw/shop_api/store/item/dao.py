@@ -1,5 +1,5 @@
-from lecture_2.hw.shop_api.store.base import Dao
-from lecture_2.hw.shop_api.store.item.models import ItemEntity, ItemInfo
+from ...store.base import Dao
+from ...store.item.models import ItemEntity, ItemInfo
 
 
 class ItemDao(Dao[ItemEntity, ItemInfo]):

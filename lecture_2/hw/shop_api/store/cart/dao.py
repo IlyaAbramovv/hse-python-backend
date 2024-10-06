@@ -1,6 +1,6 @@
-from lecture_2.hw.shop_api.store.base import Dao
-from lecture_2.hw.shop_api.store.cart.models import CartEntity, CartInfo, CartItem
-from lecture_2.hw.shop_api.store.item.models import ItemEntity
+from ...store.base import Dao
+from ...store.cart.models import CartEntity, CartInfo, CartItem
+from ...store.item.models import ItemEntity
 
 
 class CartDao(Dao[CartEntity, CartInfo]):

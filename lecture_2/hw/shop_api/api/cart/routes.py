@@ -4,10 +4,10 @@ from typing import Annotated
 from fastapi import APIRouter, HTTPException, Query, Response
 from pydantic import PositiveInt, NonNegativeInt, NonNegativeFloat
 
-from lecture_2.hw.shop_api.api.cart.contracts import CartResponse
-from lecture_2.hw.shop_api.store.cart.dao import cart_dao
-from lecture_2.hw.shop_api.store.cart.models import CartInfo
-from lecture_2.hw.shop_api.store.item.dao import item_dao
+from ...api.cart.contracts import CartResponse
+from ...store.cart.dao import cart_dao
+from ...store.cart.models import CartInfo
+from ...store.item.dao import item_dao
 
 router = APIRouter(prefix="/cart")
 
@@ -24,14 +24,21 @@ async def post_cart(response: Response):
 
 @router.get(
     '/{id}',
-    status_code=HTTPStatus.OK,
+    responses={
+        HTTPStatus.OK: {
+            "description": "Successfully returned requested cart"
+        },
+        HTTPStatus.NOT_FOUND: {
+            "description": "Request resource was not found"
+        }
+    },
 )
 async def get_cart(id: int):
     entity = cart_dao.get(id)
     if not entity:
         raise HTTPException(
             HTTPStatus.NOT_FOUND,
-            f"Request resource /item/{id} was not found",
+            f"Request resource /cart/{id} was not found",
         )
     return CartResponse.from_entity(entity)
 
@@ -53,20 +60,28 @@ async def get_batch(
 
 
 @router.post(
-    '/{cart_id}/add/{item_id}'
+    '/{cart_id}/add/{item_id}',
+    responses={
+        HTTPStatus.OK: {
+            "description": "Successfully added item to cart"
+        },
+        HTTPStatus.NOT_FOUND: {
+            "description": "Request resource was not found"
+        }
+    },
 )
 async def add_item_to_cart(cart_id: int, item_id: int):
     cart = cart_dao.get(cart_id)
     if not cart:
         raise HTTPException(
             HTTPStatus.NOT_FOUND,
-            f"Request resource /{cart_id}/add/{item_id} was not found",
+            f"Request resource /cart/{cart_id} was not found",
         )
     item = item_dao.get(item_id)
     if not item:
         raise HTTPException(
             HTTPStatus.NOT_FOUND,
-            f"Request resource /{cart_id}/add/{item_id} was not found",
+            f"Request resource /item/{item_id} was not found",
         )
     if item_id not in map(lambda x: x.id, cart.info.items):
         entity = cart_dao.add_item(cart_id, item)

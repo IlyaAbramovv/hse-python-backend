@@ -4,8 +4,8 @@ from typing import Annotated
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import NonNegativeInt, PositiveInt, NonNegativeFloat
 
-from lecture_2.hw.shop_api.api.item.contracts import ItemRequest, ItemResponse
-from lecture_2.hw.shop_api.store.item.dao import item_dao
+from ...api.item.contracts import ItemRequest, ItemResponse
+from ...store.item.dao import item_dao
 
 router = APIRouter(prefix="/item")
 
@@ -21,7 +21,14 @@ async def post_item(info: ItemRequest) -> ItemResponse:
 
 @router.get(
     "/{id}",
-    responses={HTTPStatus.OK: {}, HTTPStatus.NOT_FOUND: {}},
+    responses={
+        HTTPStatus.OK: {
+            "description": "Successfully returned requested item",
+        },
+        HTTPStatus.NOT_FOUND: {
+            "description": "Request resource was not found"
+        }
+    },
 )
 async def get_item(id: int) -> ItemResponse:
     entity = item_dao.get(id)
@@ -50,7 +57,14 @@ async def get_batch(
 
 @router.put(
     "/{id}",
-    responses={HTTPStatus.OK: {}, HTTPStatus.NOT_FOUND: {}},
+    responses={
+        HTTPStatus.OK: {
+            "description": "Successfully upserted"
+        },
+        HTTPStatus.NOT_FOUND: {
+            "description": "Request resource was not found"
+        }
+    },
 )
 async def put_item(id: int, info: ItemRequest) -> ItemResponse:
     entity = item_dao.put(id, info.as_item_info())
@@ -64,29 +78,43 @@ async def put_item(id: int, info: ItemRequest) -> ItemResponse:
 
 @router.patch(
     "/{id}",
-    responses={HTTPStatus.OK: {}, HTTPStatus.NOT_FOUND: {}},
+    responses={
+        HTTPStatus.OK: {
+            "description": "Patch applied successfully"
+        },
+        HTTPStatus.NOT_MODIFIED: {
+            "description": "Request resource was not found"
+        },
+        HTTPStatus.UNPROCESSABLE_ENTITY: {
+            "description": "Unprocessable data provided"
+        }
+    },
 )
 async def patch_item(id: int, info: dict) -> ItemResponse:
-    # item = item_dao.get(id)
-    # if ('name' not in info or item.info.name == info['name']) and ('price' not in info or item.info.price == info['price']):
-    #     raise HTTPException(HTTPStatus.NOT_MODIFIED)
     if info.keys() > {'name', 'price'}:
         raise HTTPException(
             HTTPStatus.UNPROCESSABLE_ENTITY,
-            f"Request resource /item/{id} was not found",
+            "Unprocessable data provided",
         )
     entity = item_dao.patch(id, info)
     if not entity:
         raise HTTPException(
             HTTPStatus.NOT_MODIFIED,
-            f"Request resource /item/{id} was not found",
+            f"Request resource was not found",
         )
     return ItemResponse.from_entity(entity)
 
 
 @router.delete(
     "/{id}",
-    responses={HTTPStatus.OK: {}, HTTPStatus.NOT_FOUND: {}},
+    responses={
+        HTTPStatus.OK: {
+            "description": "Deleted successfully"
+        },
+        HTTPStatus.NOT_FOUND: {
+            "description": "Request resource was not found"
+        }
+    },
 )
 async def delete_item(id: int) -> ItemResponse:
     entity = item_dao.delete(id)
