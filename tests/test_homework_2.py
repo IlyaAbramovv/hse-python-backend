@@ -15,8 +15,7 @@ faker = Faker()
 
 @pytest.fixture()
 def existing_empty_cart_id() -> int:
-    res = client.post("/cart").json()
-    return res["id"]
+    return client.post("/cart").json()["id"]
 
 
 @pytest.fixture(scope="session")
